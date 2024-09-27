@@ -16,6 +16,8 @@ const camelCase = require('lodash.camelcase');
 const { parseMdTable } = require('./md-utils');
 const replacePostmanVariables = require('./var-replacer');
 
+const lodashContrib = require('lodash-contrib');
+
 async function postmanToOpenAPI(
   input,
   output,
@@ -645,6 +647,12 @@ function parseExamples(bodies, language) {
 
 function safeSampleParse(body, name, language) {
   if (language === 'json') {
+    const bodyIsJSON = lodashContrib.isJSON(body)
+    if (!bodyIsJSON) {
+      var bodyObject = {};
+      bodyObject.error = body;
+      body = JSON.stringify(bodyObject)
+    }
     const errors = [];
     const parsedBody = jsonc.parse(body == null || body.trim().length === 0 ? '{}' : body, errors);
     if (errors.length > 0) {
