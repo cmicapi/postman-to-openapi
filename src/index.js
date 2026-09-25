@@ -261,6 +261,10 @@ function parseFormData(data) {
   };
   return data.reduce((obj, { key, type, description, value }) => {
     const { schema } = obj;
+    // description can be a plain string or a Postman rich-description object { content, type }
+    if (description !== undefined && description !== null && description.content !== undefined) {
+      description = description.content;
+    }
     if (isRequired(description)) {
       (schema.required = schema.required || []).push(key);
     }
